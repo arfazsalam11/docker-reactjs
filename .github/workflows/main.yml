@@ -3,7 +3,7 @@ name: CI/CD with SonarQube and Nexus
 on:
   push:
     branches:
-      - main  # Trigger only on main branch
+      - master  # Trigger only on main branch
 
 jobs:
   build-test-sonar-nexus:
