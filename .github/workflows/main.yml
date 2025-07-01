@@ -3,7 +3,7 @@ name: CI/CD Pipeline - React + Docker + SonarQube + Nexus
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-sonar-nexus:
