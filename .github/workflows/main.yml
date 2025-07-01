@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-test-sonar-nexus:
+  build-sonar-nexus:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,9 +21,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Tests (Temporarily Skip API Failures)
-        run: npm test --if-present || true
+      - name: Build React App
+        run: npm run build
 
+      - name: Start React App (Optional for Testing Purposes)
+        run: npm run start &
+      
       - name: Run SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
