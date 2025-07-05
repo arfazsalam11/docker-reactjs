@@ -24,10 +24,6 @@ jobs:
       - name: Build React App
         run: npm run build
 
-      # Optional: Only if you need to test the app running in background
-      # - name: Start React App (Optional for Testing Purposes)
-      #   run: npm run start &
-
       - name: Run SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
@@ -45,7 +41,7 @@ jobs:
       - name: Log in to Nexus Docker Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.NEXUS_URL }}
+          registry: ${{ secrets.NEXUS_REGISTRY }}
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
 
@@ -54,4 +50,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.NEXUS_URL }}/react-docker-app:latest
+          tags: ${{ secrets.NEXUS_REGISTRY }}/react-docker-app:latest
