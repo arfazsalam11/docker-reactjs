@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-sonar-nexus:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Ensures EC2 self-hosted runner handles the job
 
     steps:
       - name: Checkout Code
@@ -51,4 +51,3 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.NEXUS_REGISTRY }}/react-docker-app:latest
-
