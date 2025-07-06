@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-sonar-nexus:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Code
@@ -51,3 +51,4 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.NEXUS_REGISTRY }}/react-docker-app:latest
+
