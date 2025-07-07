@@ -24,10 +24,6 @@ jobs:
       - name: Build React App
         run: npm run build
 
-      - name: Build React App
-        run: npm run start
-        
-
       - name: Run SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
