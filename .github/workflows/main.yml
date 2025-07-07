@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-sonar-nexus:
-    runs-on: self-hosted # Ensures EC2 self-hosted runner handles the job
+    runs-on: self-hosted
     
     steps:
       - name: Checkout Code
@@ -35,23 +35,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      - name: Configure Docker for Insecure Registry
+      - name: Configure Docker daemon for insecure registry
         run: |
-          # Configure Docker daemon for insecure registry
-          sudo mkdir -p /etc/docker
-          echo "{\"insecure-registries\":[\"${{ secrets.NEXUS_REGISTRY }}\"]}" | sudo tee /etc/docker/daemon.json
+          REGISTRY=$(echo "${{ secrets.NEXUS_REGISTRY }}" | tr -d '\n' | tr -d '\r')
+          echo "{\"insecure-registries\":[\"$REGISTRY\"]}" | sudo tee /etc/docker/daemon.json
+          sudo systemctl daemon-reload
           sudo systemctl restart docker
-          sleep 10
-
-      - name: Create Buildx Configuration
-        run: |
-          # Create buildx configuration file for insecure registry
-          mkdir -p ~/.docker/buildx
-          cat > ~/.docker/buildx/buildkitd.toml << EOF
-          [registry."${{ secrets.NEXUS_REGISTRY }}"]
-            http = true
-            insecure = true
-          EOF
+          sleep 5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -69,11 +59,8 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Build and Push Docker Image to Nexus
-        run: |
-          # Build with buildx but force HTTP registry
-          docker buildx build \
-            --platform linux/amd64 \
-            --tag ${{ secrets.NEXUS_REGISTRY }}/react-docker-app:latest \
-            --push \
-            --registry-config ~/.docker/buildx/buildkitd.toml \
-            .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.NEXUS_REGISTRY }}/react-docker-app:latest
