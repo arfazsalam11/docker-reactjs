@@ -40,7 +40,7 @@ jobs:
           docker start nexus || true
           echo "Waiting for Nexus to be ready..."
           for i in {1..20}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.NEXUS_REGISTRY }}/v2/ || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.NEXUS_REGISTRY }}/v3/ || echo "000")
             if [ "$STATUS" -eq 401 ] || [ "$STATUS" -eq 200 ]; then
               echo "Nexus is ready."
               exit 0
