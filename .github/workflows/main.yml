@@ -47,14 +47,16 @@ jobs:
           docker start nexus || true
           echo "Waiting for Nexus to be ready..."
           for i in {1..20}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8082/v2/)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8082/v2/ || echo "000")
             if [ "$STATUS" -eq 401 ] || [ "$STATUS" -eq 200 ]; then
               echo "Nexus is ready."
-              break
+              exit 0
             fi
-            echo "Nexus not ready yet. Retrying in 5 seconds..."
+            echo "Nexus not ready yet (HTTP $STATUS). Retrying in 5 seconds..."
             sleep 5
           done
+          echo "ERROR: Nexus did not become ready in time."
+          exit 1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
