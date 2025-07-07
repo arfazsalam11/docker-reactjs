@@ -41,12 +41,20 @@ jobs:
           echo "{\"insecure-registries\":[\"$REGISTRY\"]}" | sudo tee /etc/docker/daemon.json
           sudo systemctl daemon-reload
           sudo systemctl restart docker
-          sleep 5
 
-      - name: Ensure Nexus is Running After Docker Restart
+      - name: Ensure Nexus is Running and Ready
         run: |
           docker start nexus || true
-          sleep 10
+          echo "Waiting for Nexus to be ready..."
+          for i in {1..20}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8082/v2/)
+            if [ "$STATUS" -eq 401 ] || [ "$STATUS" -eq 200 ]; then
+              echo "Nexus is ready."
+              break
+            fi
+            echo "Nexus not ready yet. Retrying in 5 seconds..."
+            sleep 5
+          done
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
