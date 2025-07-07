@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-sonar-nexus-dockerhub:
-    runs-on: self-hosted  # EC2 self-hosted runner
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Code
@@ -35,7 +35,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      # Ensure Nexus is ready
+      - name: Debug Nexus Registry Value
+        run: echo "Registry = ${{ secrets.NEXUS_REGISTRY }}"
+
       - name: Wait for Nexus to be ready
         run: |
           echo "Checking Nexus availability..."
